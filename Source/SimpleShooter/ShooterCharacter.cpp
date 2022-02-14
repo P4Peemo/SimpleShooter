@@ -3,6 +3,8 @@
 
 #include "ShooterCharacter.h"
 #include "Rifle.h"
+#include "SimpleShooterGameModeBase.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -79,7 +81,18 @@ float AShooterCharacter::TakeDamage(float Damage, struct FDamageEvent const &Dam
 	float DamageToApply = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 	DamageToApply = FMath::Min(DamageToApply, Health);
 	Health -= DamageToApply;
-	UE_LOG(LogTemp, Warning, TEXT("Health left: %f"), Health);
+
+	if (IsDead())
+	{	
+		ASimpleShooterGameModeBase *GameMode = GetWorld()->GetAuthGameMode<ASimpleShooterGameModeBase>();
+		if (GameMode != nullptr)
+		{
+			GameMode->PawnKilled(this);
+		}
+	
+		DetachFromControllerPendingDestroy();
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 
 	return DamageToApply;
 }
@@ -87,4 +100,9 @@ float AShooterCharacter::TakeDamage(float Damage, struct FDamageEvent const &Dam
 bool AShooterCharacter::IsDead() const
 {
 	return Health <= 0;
+}
+
+float AShooterCharacter::GetHealthPercentage() const
+{
+	return Health / MaxHealth;
 }

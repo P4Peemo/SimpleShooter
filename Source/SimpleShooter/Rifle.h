@@ -34,6 +34,12 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	class USkeletalMeshComponent *Mesh;
 
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundBase *MuzzleSound;
+
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundBase *ImpactSound;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Particle Effects")
 	UParticleSystem *MuzzleFlash;
 
@@ -45,4 +51,8 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float Damage = 10.f;
+
+	bool RifleTrace(FHitResult &Hit, FVector &ShotDirection);
+
+	AController *GetOwnerController() const;
 };
